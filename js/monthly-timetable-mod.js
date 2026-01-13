@@ -1508,32 +1508,85 @@
             }, 100);
         },
         
-        // حساب أوقات الصلاة
+        // حساب أوقات الصلاة باستخدام praytimes
         calculatePrayerTimes: function(date, location) {
             // إذا كانت مكتبة praytimes متاحة، استخدمها
             if (this.prayTimes && typeof this.prayTimes.getTimes === 'function') {
                 try {
-                    // حساب الأوقات
-                    const times = this.prayTimes.getTimes(
-                        date,
-                        [location.latitude, location.longitude],
-                        3, // توقيت العراق
-                        0, // الارتفاع
-                        0  // التوقيت الصيفي
-                    );
+                    // الحصول على طريقة الحساب الحالية
+                    const methodSelect = document.getElementById('calculation-method-monthly');
+                    const currentMethod = methodSelect ? methodSelect.value : 'Hadi';
                     
-                    return {
-                        imsak: this.formatTime(times.imsak || '--:--'),
-                        fajr: this.formatTime(times.fajr || '--:--'),
-                        sunrise: this.formatTime(times.sunrise || '--:--'),
-                        dhuhr: this.formatTime(times.dhuhr || '--:--'),
-                        asr: this.formatTime(times.asr || '--:--'),
-                        sunset: this.formatTime(times.sunset || '--:--'),
-                        maghrib: this.formatTime(times.maghrib || '--:--'),
-                        isha: this.formatTime(times.isha || '--:--'),
-                        midnight: this.formatTime(times.midnight || '--:--')
-                    };
-                    
+                    // إعدادات تقويم الهادي مع الزاوية 4 للمغرب
+                    if (currentMethod === 'Hadi') {
+                        // حفظ الإعدادات الأصلية
+                        const originalMethod = this.prayTimes.getMethod();
+                        
+                        // استخدام طريقة جعفري كأساس (لأنها تستخدم الزاوية 4 للمغرب)
+                        this.prayTimes.setMethod('Jafari');
+                        
+                        // تعديل إعدادات تقويم الهادي
+                        const hadiParams = {
+                            fajr: 18,   // تقويم الهادي يستخدم 18°
+                            isha: 18,   // تقويم الهادي يستخدم 18°
+                            maghrib: 4, // الزاوية 4 للمغرب (مشترك مع الجعفري)
+                            asr: 'Standard', // المذهب الحنفي
+                            highLats: 'NightMiddle'
+                        };
+                        
+                        // تطبيق إعدادات الهادي
+                        this.prayTimes.adjust(hadiParams);
+                        
+                        // حساب الأوقات
+                        const times = this.prayTimes.getTimes(
+                            date,
+                            [location.latitude, location.longitude],
+                            3, // توقيت العراق
+                            0, // الارتفاع
+                            0  // التوقيت الصيفي
+                        );
+                        
+                        // استعادة الطريقة الأصلية
+                        this.prayTimes.setMethod(originalMethod);
+                        
+                        // تطبيق تعديلات الوقت من الإعدادات
+                        const adjustedTimes = this.applyTimeAdjustments(times);
+                        
+                        return {
+                            imsak: this.formatTime(adjustedTimes.imsak || times.imsak || '--:--'),
+                            fajr: this.formatTime(adjustedTimes.fajr || times.fajr || '--:--'),
+                            sunrise: this.formatTime(adjustedTimes.sunrise || times.sunrise || '--:--'),
+                            dhuhr: this.formatTime(adjustedTimes.dhuhr || times.dhuhr || '--:--'),
+                            asr: this.formatTime(adjustedTimes.asr || times.asr || '--:--'),
+                            sunset: this.formatTime(adjustedTimes.sunset || times.sunset || '--:--'),
+                            maghrib: this.formatTime(adjustedTimes.maghrib || times.maghrib || '--:--'), // سيتم حسابها بـ 4°
+                            isha: this.formatTime(adjustedTimes.isha || times.isha || '--:--'),
+                            midnight: this.formatTime(adjustedTimes.midnight || times.midnight || '--:--')
+                        };
+                    } else {
+                        // طرق حساب أخرى (بدون تغيير)
+                        const times = this.prayTimes.getTimes(
+                            date,
+                            [location.latitude, location.longitude],
+                            3,
+                            0,
+                            0
+                        );
+                        
+                        const adjustedTimes = this.applyTimeAdjustments(times);
+                        
+                        return {
+                            imsak: this.formatTime(adjustedTimes.imsak || times.imsak || '--:--'),
+                            fajr: this.formatTime(adjustedTimes.fajr || times.fajr || '--:--'),
+                            sunrise: this.formatTime(adjustedTimes.sunrise || times.sunrise || '--:--'),
+                            dhuhr: this.formatTime(adjustedTimes.dhuhr || times.dhuhr || '--:--'),
+                            asr: this.formatTime(adjustedTimes.asr || times.asr || '--:--'),
+                            sunset: this.formatTime(adjustedTimes.sunset || times.sunset || '--:--'),
+                            maghrib: this.formatTime(adjustedTimes.maghrib || times.maghrib || '--:--'),
+                            isha: this.formatTime(adjustedTimes.isha || times.isha || '--:--'),
+                            midnight: this.formatTime(adjustedTimes.midnight || times.midnight || '--:--')
+                        };
+                    }
                 } catch (error) {
                     console.error('خطأ في حساب أوقات الصلاة باستخدام praytimes:', error);
                     return this.calculateApproximateTimes(date, location);
@@ -1643,4 +1696,5 @@
         }, 100);
     });
 })();
+
 
