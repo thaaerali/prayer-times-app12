@@ -50,123 +50,189 @@
             const style = document.createElement('style');
             style.id = 'monthly-timetable-print-styles';
            style.textContent = `
-@page {
-    size: A4 portrait;
-    margin: 10mm;
-}
-
-@media print {
-
-    body {
-        background: #1e1e1e !important;
-        color: #fff !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    body * {
-        visibility: hidden;
-    }
-
-    #monthly-timetable-modal,
-    #monthly-timetable-modal * {
-        visibility: visible;
-    }
-
-    #monthly-timetable-modal {
-        position: absolute;
-        inset: 0;
-        background: #1e1e1e !important;
-    }
-
-    .modal-dialog,
-    .modal-content {
-        max-width: 100% !important;
-        width: 100% !important;
-        margin: 0 !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-
-    /* إخفاء كل شيء غير الطباعة */
-    .month-controls,
-    .btn,
-    .card,
-    .alert,
-    .monthly-header,
-    .print-settings,
-    .text-muted,
-    .spinner-border {
-        display: none !important;
-    }
-
-    /* رأس الصفحة */
-    .print-header {
-        display: block !important;
-        text-align: center;
-        color: #fff;
-        margin-bottom: 10px;
-    }
-
-    .print-header h2 {
-        font-size: 20px;
-        margin: 0;
-    }
-
-    .print-subtitle {
-        font-size: 13px;
-        color: #ccc;
-    }
-
-    /* الآية */
-    .print-quran-verse {
-        display: block !important;
-        text-align: center;
-        font-size: 16px;
-        margin: 10px 0 15px;
-        color: #ffd369;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-    }
-
-    /* الجدول */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 11px;
-        background: #1e1e1e !important;
-        color: #fff !important;
-    }
-
-    th {
-        background: #2c2c2c !important;
-        color: #fff !important;
-        border: 1px solid #777 !important;
-        padding: 4px !important;
-    }
-
-    td {
-        border: 1px solid #555 !important;
-        padding: 3px !important;
-    }
-
-    /* اليوم الحالي */
-    .table-success {
-        background: #1f3d2b !important;
-    }
-
-    /* التذييل */
-    .print-footer {
-        display: block !important;
-        text-align: center;
-        font-size: 10px;
-        color: #aaa;
-        margin-top: 8px;
-    }
-}
-`;
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+                    
+                    #monthly-timetable-modal .modal-content,
+                    #monthly-timetable-modal .modal-content * {
+                        visibility: visible;
+                    }
+                    
+                    #monthly-timetable-modal {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        margin: 0;
+                        padding: 0;
+                        width: 100%;
+                        min-height: 100vh;
+                        background: white !important;
+                        display: block !important;
+                        opacity: 1 !important;
+                        transform: none !important;
+                    }
+                    
+                    #monthly-timetable-modal .modal-dialog {
+                        max-width: 100% !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    
+                    #monthly-timetable-modal .modal-content {
+                        border: none !important;
+                        box-shadow: none !important;
+                        border-radius: 0 !important;
+                        min-height: 100vh;
+                    }
+                    
+                    #monthly-timetable-modal .modal-header,
+                    #monthly-timetable-modal .modal-footer {
+                        display: none !important;
+                    }
+                    
+                    #monthly-timetable-modal .print-header {
+                        display: block !important;
+                    }
+                    
+                    .month-controls,
+                    .btn-print,
+                    .btn-close,
+                    button,
+                    .alert,
+                    .text-muted:not(.print-text),
+                    .print-settings {
+                        display: none !important;
+                    }
+                    
+                    .monthly-timetable-container {
+                        padding: 10px !important;
+                    }
+                    
+                    .print-quran-verse {
+                        display: block !important;
+                        text-align: center;
+                        font-size: 16px !important;
+                        color: #2c3e50 !important;
+                        font-weight: bold;
+                        margin: 15px 0 !important;
+                        padding: 10px !important;
+                        border-bottom: 2px solid #3498db !important;
+                        font-family: 'Traditional Arabic', 'Arial', sans-serif !important;
+                    }
+                    
+                    .table {
+                        font-size: 12px !important;
+                        border: 1px solid #000 !important;
+                    }
+                    
+                    .table th,
+                    .table td {
+                        border: 1px solid #000 !important;
+                        padding: 4px !important;
+                    }
+                    
+                    .table-success {
+                        background-color: #d4edda !important;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    
+                    .print-watermark {
+                        position: fixed;
+                        bottom: 10px;
+                        right: 10px;
+                        font-size: 10px;
+                        color: #666;
+                    }
+                    
+                    .print-footer {
+                        display: block !important;
+                        text-align: center;
+                        font-size: 10px;
+                        color: #666;
+                        margin-top: 20px;
+                        padding-top: 10px;
+                        border-top: 1px solid #ddd;
+                    }
+                    
+                    .print-notice {
+                        display: block !important;
+                        text-align: center;
+                        font-size: 12px !important;
+                        color: #e74c3c !important;
+                        font-style: italic;
+                        margin-top: 15px !important;
+                        padding: 8px !important;
+                        background-color: #fff3cd !important;
+                        border: 1px solid #ffeaa7 !important;
+                        border-radius: 4px !important;
+                    }
+                }
+                
+                .print-header {
+                    display: none;
+                    text-align: center;
+                    padding: 15px 0;
+                    border-bottom: 2px solid #333;
+                    margin-bottom: 15px;
+                }
+                
+                .print-header h2 {
+                    color: #2c3e50;
+                    margin-bottom: 5px;
+                    font-size: 22px;
+                }
+                
+                .print-header .print-subtitle {
+                    color: #7f8c8d;
+                    font-size: 14px;
+                }
+                
+                .print-header .print-date {
+                    color: #e74c3c;
+                    font-weight: bold;
+                    margin-top: 5px;
+                    font-size: 12px;
+                }
+                
+                .print-quran-verse {
+                    display: none;
+                    direction: rtl;
+                    text-align: center;
+                    font-size: 18px;
+                    color: #2c3e50;
+                    font-weight: bold;
+                    margin: 20px 0;
+                    padding: 15px;
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    border-radius: 8px;
+                    border-right: 5px solid #3498db;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    font-family: 'Traditional Arabic', 'Arial', sans-serif;
+                }
+                
+                .print-notice {
+                    display: none;
+                    direction: rtl;
+                    text-align: center;
+                    font-size: 14px;
+                    color: #e74c3c;
+                    font-style: italic;
+                    margin-top: 20px;
+                    padding: 12px;
+                    background-color: #fff3cd;
+                    border: 2px solid #ffeaa7;
+                    border-radius: 6px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                
+                .print-footer {
+                    display: none;
+                }
+            `;
 
             
             document.head.appendChild(style);
@@ -1296,4 +1362,5 @@
         }, 1000);
     });
 })();
+
 
