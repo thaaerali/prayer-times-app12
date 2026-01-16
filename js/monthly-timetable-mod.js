@@ -295,251 +295,178 @@
         },
         
         // تحميل محتوى الجدول مع زر الطباعة
-        loadTimetableContent: function() {
-            const contentDiv = document.getElementById('monthly-timetable-content');
-            if (!contentDiv) return;
+       loadTimetableContent: function() {
+    const contentDiv = document.getElementById('monthly-timetable-content');
+    if (!contentDiv) return;
+    
+    // احصل على الموقع الحالي من التطبيق الرئيسي
+    const currentLocation = this.getCurrentLocation();
+    
+    contentDiv.innerHTML = `
+        <div class="monthly-timetable-container p-3">
+            <!-- رأس الجدول للطباعة -->
+            <div class="print-header">
+                <h2>جدول أوقات الصلاة الشهري</h2>
+                <div class="print-subtitle">
+                    <span>${this.monthNames[this.currentMonth]} ${this.currentYear}</span> | 
+                    <span>${currentLocation.city}</span>
+                </div>
+                <div class="print-date">
+                    تم الإنشاء: ${new Date().toLocaleDateString('ar-EG')}
+                </div>
+            </div>
             
-            // احصل على الموقع الحالي من التطبيق الرئيسي
-            const currentLocation = this.getCurrentLocation();
+            <!-- الآية القرآنية للطباعة -->
+            <div class="print-quran-verse">
+                ﴿إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا﴾ [النساء: 103]
+            </div>
             
-            contentDiv.innerHTML = `
-                <div class="monthly-timetable-container p-3">
-                    <!-- رأس الجدول للطباعة -->
-                    <div class="print-header">
-                        <h2>جدول أوقات الصلاة الشهري</h2>
-                        <div class="print-subtitle">
-                            <span>${this.monthNames[this.currentMonth]} ${this.currentYear}</span> | 
-                            <span>${currentLocation.city}</span>
-                        </div>
-                        <div class="print-date">
-                            تم الإنشاء: ${new Date().toLocaleDateString('ar-EG')}
-                        </div>
+            <!-- رأس الجدول العادي -->
+            <div class="monthly-header text-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-primary mb-0">جدول أوقات الصلاة الشهري</h4>
+                    <button class="btn btn-outline-secondary btn-sm" id="btn-close-timetable">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div id="monthly-location-info" class="text-muted small">
+                    <i class="bi bi-geo-alt"></i> الموقع: ${currentLocation.city}
+                </div>
+            </div>
+            
+            <!-- عناصر التحكم -->
+            <div class="month-controls d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 p-3 bg-light rounded">
+                <div class="d-flex align-items-center gap-2">
+                    <button id="prev-month-btn" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-chevron-right"></i> السابق
+                    </button>
+                    <div id="current-month-display" class="current-month-display fw-bold px-3">
+                        ${this.monthNames[this.currentMonth]} ${this.currentYear}
                     </div>
-                    
-                    <!-- الآية القرآنية للطباعة -->
-                    <div class="print-quran-verse">
-                        ﴿إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا﴾ [النساء: 103]
-                    </div>
-                    
-                    <!-- رأس الجدول العادي -->
-                    <div class="monthly-header text-center mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="text-primary mb-0">جدول أوقات الصلاة الشهري</h4>
-                            <button class="btn btn-outline-secondary btn-sm" id="btn-close-timetable">
-                                <i class="bi bi-x-lg"></i>
-                            </button>
+                    <button id="next-month-btn" class="btn btn-outline-primary btn-sm">
+                        التالي <i class="bi bi-chevron-left"></i>
+                    </button>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <button id="go-to-today-btn" class="btn btn-primary btn-sm">
+                        <i class="bi bi-calendar-check me-1"></i> هذا الشهر
+                    </button>
+                </div>
+            </div>
+            
+            <!-- إعدادات طريقة الحساب والطباعة -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white py-2">
+                            <i class="bi bi-calculator me-2"></i>طريقة حساب أوقات الصلاة
                         </div>
-                        <div id="monthly-location-info" class="text-muted small">
-                            <i class="bi bi-geo-alt"></i> الموقع: ${currentLocation.city}
-                        </div>
-                    </div>
-                    
-                    <!-- عناصر التحكم -->
-                    <div class="month-controls d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 p-3 bg-light rounded">
-                        <div class="d-flex align-items-center gap-2">
-                            <button id="prev-month-btn" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-chevron-right"></i> السابق
-                            </button>
-                            <div id="current-month-display" class="current-month-display fw-bold px-3">
-                                ${this.monthNames[this.currentMonth]} ${this.currentYear}
-                            </div>
-                            <button id="next-month-btn" class="btn btn-outline-primary btn-sm">
-                                التالي <i class="bi bi-chevron-left"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="d-flex align-items-center gap-2">
-                            <button id="go-to-today-btn" class="btn btn-primary btn-sm">
-                                <i class="bi bi-calendar-check me-1"></i> هذا الشهر
-                            </button>
-                            <button id="btn-print-timetable" class="btn btn-success btn-sm">
-                                <i class="bi bi-printer me-1"></i> طباعة الجدول
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- معلومات سريعة -->
-                    <div class="row mb-4">
-                        <div class="col-md-3">
-                            <div class="card border-0 bg-light">
-                                <div class="card-body text-center py-2">
-                                    <small class="text-muted d-block">خط العرض</small>
-                                    <span class="fw-bold">${currentLocation.latitude.toFixed(4)}°</span>
+                        <div class="card-body py-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 mb-2 mb-md-0">
+                                    <label class="form-label mb-1"><small>اختر طريقة الحساب:</small></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <select id="calculation-method-monthly" class="form-select form-select-sm">
+                                        <option value="Hadi">تقويم الهادي</option>
+                                        <option value="MWL">رابطة العالم الإسلامي</option>
+                                        <option value="ISNA">الجمعية الإسلامية لأمريكا الشمالية</option>
+                                        <option value="Egypt">هيئة المساحة المصرية</option>
+                                        <option value="Makkah">أم القرى</option>
+                                        <option value="Karachi">جامعة العلوم الإسلامية كراتشي</option>
+                                        <option value="Tehran">جامعة طهران</option>
+                                        <option value="Jafari">الهيئة العامة للتقويم (إيران)</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card border-0 bg-light">
-                                <div class="card-body text-center py-2">
-                                    <small class="text-muted d-block">خط الطول</small>
-                                    <span class="fw-bold">${currentLocation.longitude.toFixed(4)}°</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card border-0 bg-light">
-                                <div class="card-body text-center py-2">
-                                    <small class="text-muted d-block">طريقة الحساب</small>
-                                    <span id="current-method-name" class="fw-bold">تقويم الهادي</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card border-0 bg-light">
-                                <div class="card-body text-center py-2">
-                                    <small class="text-muted d-block">التوقيت الصيفي</small>
-                                    <span class="fw-bold">${this.getDstStatus()}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- إعدادات طريقة الحساب -->
-                    <div class="row mb-4">
-                        <div class="col-md-8">
-                            <div class="card border-primary">
-                                <div class="card-header bg-primary text-white py-2">
-                                    <i class="bi bi-calculator me-2"></i>إعدادات الحساب
-                                </div>
-                                <div class="card-body py-3">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-4 mb-2 mb-md-0">
-                                            <label class="form-label mb-1"><small>طريقة الحساب:</small></label>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <select id="calculation-method-monthly" class="form-select form-select-sm">
-                                                <option value="Hadi">تقويم الهادي</option>
-                                                <option value="MWL">رابطة العالم الإسلامي</option>
-                                                <option value="ISNA">الجمعية الإسلامية لأمريكا الشمالية</option>
-                                                <option value="Egypt">هيئة المساحة المصرية</option>
-                                                <option value="Makkah">أم القرى</option>
-                                                <option value="Karachi">جامعة العلوم الإسلامية كراتشي</option>
-                                                <option value="Tehran">جامعة طهران</option>
-                                                <option value="Jafari">الهيئة العامة للتقويم (إيران)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-12">
-                                            <small class="text-muted" id="method-description">
-                                                طريقة حساب أوقات الصلاة المستخدمة حالياً
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card border-info">
-                                <div class="card-header bg-info text-white py-2">
-                                    <i class="bi bi-printer me-2"></i>خيارات الطباعة
-                                </div>
-                                <div class="card-body py-3">
-                                    <button id="btn-print-options" class="btn btn-outline-success btn-sm w-100">
-                                        <i class="bi bi-printer me-1"></i>معاينة قبل الطباعة
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- إعدادات إضافية للطباعة -->
-                    <div class="row mb-3 print-settings d-none d-print-block">
-                        <div class="col-12">
-                            <div class="card border-primary">
-                                <div class="card-body py-2">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block print-text">طريقة الحساب:</small>
-                                            <span class="fw-bold print-text" id="print-method-name">تقويم الهادي</span>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block print-text">التوقيت الصيفي:</small>
-                                            <span class="fw-bold print-text">${this.getDstStatus()}</span>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block print-text">المصدر:</small>
-                                            <span class="fw-bold print-text">praytimes.js</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- جدول أوقات الصلاة -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-sm">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th class="text-center">اليوم</th>
-                                    <th class="text-center">الإمساك</th>
-                                    <th class="text-center">الفجر</th>
-                                    <th class="text-center">الشروق</th>
-                                    <th class="text-center">الظهر</th>
-                                    <th class="text-center">العصر</th>
-                                    <th class="text-center">الغروب</th>
-                                    <th class="text-center">المغرب</th>
-                                    <th class="text-center">العشاء</th>
-                                    <th class="text-center">منتصف الليل</th>
-                                </tr>
-                            </thead>
-                            <tbody id="monthly-table-body">
-                                <!-- سيتم ملء الجدول هنا -->
-                                <tr>
-                                    <td colspan="10" class="text-center py-4">
-                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                            <span class="visually-hidden">جاري التحميل...</span>
-                                        </div>
-                                        <span class="ms-2">جاري حساب أوقات الصلاة...</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- الملاحظة للطباعة -->
-                    <div class="print-notice">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        نرجو من المؤمنين الكرام الاحتياط بدقيقة أو دقيقتين عند الصلاة
-                    </div>
-                    
-                    <!-- معلومات إضافية -->
-                    <div class="mt-4 text-center text-muted small">
-                        <p>
-                            <i class="bi bi-info-circle me-1"></i>
-                            جميع الأوقات بالتوقيت المحلي • يتم الحساب باستخدام مكتبة praytimes.js
-                        </p>
-                        <div class="alert alert-info py-2">
-                            <small>
-                                <i class="bi bi-lightbulb me-1"></i>
-                                <strong>ملاحظة:</strong> هذه الأوقات دقيقة وتعتمد على الموقع الجغرافي وطريقة الحساب المختارة.
-                            </small>
-                        </div>
-                        
-                        <!-- زر الطباعة للهواتف -->
-                        <div class="d-block d-md-none mt-3">
-                            <button id="btn-print-mobile" class="btn btn-success btn-sm w-100">
-                                <i class="bi bi-printer me-1"></i> طباعة الجدول
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- تذييل الطباعة -->
-                    <div class="print-footer">
-                        <div>تطبيق مواقيت الصلاة - ${currentLocation.city}</div>
-                        <div>${new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                        <div class="print-watermark">صفحة 1 من 1</div>
                     </div>
                 </div>
-            `;
+                <div class="col-md-4">
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white py-2">
+                            <i class="bi bi-printer me-2"></i>الطباعة
+                        </div>
+                        <div class="card-body py-3 text-center">
+                            <button id="btn-print-timetable" class="btn btn-success btn-sm w-100 mb-2">
+                                <i class="bi bi-printer me-1"></i>طباعة الجدول
+                            </button>
+                            <button id="btn-print-options" class="btn btn-outline-secondary btn-sm w-100">
+                                <i class="bi bi-eye me-1"></i>معاينة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
-            // تعيين طريقة الحساب المختارة
-            this.setCalculationMethod();
+            <!-- جدول أوقات الصلاة -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-sm">
+                    <thead class="table-primary">
+                        <tr>
+                            <th class="text-center">اليوم</th>
+                            <th class="text-center">الإمساك</th>
+                            <th class="text-center">الفجر</th>
+                            <th class="text-center">الشروق</th>
+                            <th class="text-center">الظهر</th>
+                            <th class="text-center">العصر</th>
+                            <th class="text-center">الغروب</th>
+                            <th class="text-center">المغرب</th>
+                            <th class="text-center">العشاء</th>
+                            <th class="text-center">منتصف الليل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthly-table-body">
+                        <!-- سيتم ملء الجدول هنا -->
+                        <tr>
+                            <td colspan="10" class="text-center py-4">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">جاري التحميل...</span>
+                                </div>
+                                <span class="ms-2">جاري حساب أوقات الصلاة...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             
-            // إعداد الأحداث للعناصر الجديدة
-            this.setupModalEventListeners();
-        },
+            <!-- الملاحظة للطباعة -->
+            <div class="print-notice">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                نرجو من المؤمنين الكرام الاحتياط بدقيقة أو دقيقتين عند الصلاة
+            </div>
+            
+            <!-- معلومات إضافية -->
+            <div class="mt-4 text-center text-muted small">
+                <p>
+                    <i class="bi bi-info-circle me-1"></i>
+                    جميع الأوقات بالتوقيت المحلي • ${currentLocation.city}
+                </p>
+                
+                <!-- زر الطباعة للهواتف -->
+                <div class="d-block d-md-none mt-3">
+                    <button id="btn-print-mobile" class="btn btn-success btn-sm w-100">
+                        <i class="bi bi-printer me-1"></i> طباعة الجدول
+                    </button>
+                </div>
+            </div>
+            
+            <!-- تذييل الطباعة -->
+            <div class="print-footer">
+                <div>تطبيق مواقيت الصلاة - ${currentLocation.city}</div>
+                <div>${new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                <div class="print-watermark">صفحة 1 من 1</div>
+            </div>
+        </div>
+    `;
+    
+    // تعيين طريقة الحساب المختارة
+    this.setCalculationMethod();
+    
+    // إعداد الأحداث للعناصر الجديدة
+    this.setupModalEventListeners();
+},
         
         // الحصول على الموقع الحالي
         getCurrentLocation: function() {
@@ -1362,5 +1289,6 @@
         }, 1000);
     });
 })();
+
 
 
